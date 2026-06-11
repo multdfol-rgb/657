@@ -493,20 +493,21 @@ function withdrawBonus() {
 
 // ── COPY REF ──────────────────────────────────────────────────────────────────
 // ── COPY REF ──────────────────────────────────────────────────────────────────
-function copyRef() {
-  if (!tgUser) { toast('err','Откройте через Telegram'); return; }
-  var link = 'https://t.me/' + BOT_NAME + '?start=' + tgUser.id;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(function() { toast('ok','Ссылка скопирована'); });
-  } else {
-    var e = document.createElement('textarea');
-    e.value = link;
-    document.body.appendChild(e);
-    e.select();
-    document.execCommand('copy');
-    document.body.removeChild(e);
-    toast('ok','Ссылка скопирована');
-  }
+function shareRef() {
+    if (!tgUser) {
+        toast('err', 'Откройте через Telegram');
+        return;
+    }
+
+    const ref = `https://t.me/${BOT_NAME}?start=${tgUser.id}`;
+    const text = `🔥 Присоединяйся по моей ссылке!\n${ref}`;
+
+    Telegram.WebApp.openTelegramLink(
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(ref) +
+        "&text=" +
+        encodeURIComponent(text)
+    );
 }
 
 
