@@ -496,26 +496,41 @@ function withdrawBonus() {
 function copyRef() {
   if (!tgUser) { toast('err','Откройте через Telegram'); return; }
   var link = 'https://t.me/' + BOT_NAME + '?start=' + tgUser.id;
-  
-  // Telegram-native share
+
+  // Самый надёжный способ в Telegram Mini App — нативный Share
   if (tgApp && tgApp.openTelegramLink) {
     var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(link)
-                 + '&text=' + encodeURIComponent('Обменяй валюту через CNY Exchanger!');
+                 + '&text=' + encodeURIComponent('Обменяй юани и рубли быстро и выгодно!');
     tgApp.openTelegramLink(shareUrl);
     return;
   }
-  
-  // Fallback для браузера
-  if (navigator.clipboard) {
+
+  // Fallback — clipboard с обязательным catch
+  if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(link)
       .then(function() { toast('ok','Ссылка скопирована'); })
-      .catch(function() { toast('err','Не удалось скопировать'); });
+      .catch(function(err) {
+        console.error('Clipboard error:', err);
+        toast('err','Не удалось скопировать ссылку');
+      });
   } else {
-    toast('err','Откройте через Telegram');
+    // Старый метод
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = link;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('ok','Ссылка скопирована');
+    } catch(e) {
+      toast('err','Не удалось скопировать');
+    }
   }
 }
-
-
 // ── OPEN MANAGER ──────────────────────────────────────────────────────────────
 function openMgr() {
   var url = 'https://t.me/' + MGR_NAME.replace('@', '');
